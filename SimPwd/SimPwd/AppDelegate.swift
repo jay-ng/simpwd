@@ -8,12 +8,15 @@
 
 import UIKit
 import CoreData
+import CryptoSwift
+import Foundation
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var Account : [NSManagedObject]? = []
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -88,6 +91,78 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+    // CoreData Function Implementation
+    
+    func createAccount(username: String, password: String) {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let auth = NSEntityDescription.entity(forEntityName: "Auth", in: managedContext)!
+        let account = NSManagedObject(entity: auth,
+                                     insertInto: managedContext)
+        print ("- Account: \(username), \(password)")
+        account.setValue(username, forKey: "username")
+        account.setValue(password.sha256(), forKey: "password")
+        
+        do {
+            try managedContext.save()
+            print ("- Account: Account Created")
+        } catch let error {
+            print ("- CoreData: Could not save context. Error: \(error)")
+        }
+    }
+    
+    func signIn(username: String, password: String) -> Bool {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return false
+        }
+        
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Auth")
+        fetchRequest.returnsObjectsAsFaults = false
+        
+        do {
+            let account = try managedContext.fetch(fetchRequest)
+            for acc in (account) {
+                if (username == acc.value(forKey: "username") as! String) {
+                    if (password.sha256() == acc.value(forKey: "password") as! String) {
+                        return true
+                    }
+                }
+            }
+        } catch let error {
+            print ("- CoreData: Could not fetch context. Error: \(error)")
+        }
+        
+        
+        return false
+    }
+    
+    func clearData() {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Auth")
+        let request = NSBatchDeleteRequest(fetchRequest: fetch)
+        
+        do {
+            try managedContext.execute(request)
+            try managedContext.save()
+        } catch {
+            print ("There was an error")
+        }
+    }
 
+    // Crypto Function Implementation
+    
 }
 
+class Account: NSManagedObject {
+    @NSManaged var username: String
+    @NSManaged var password: String
+}

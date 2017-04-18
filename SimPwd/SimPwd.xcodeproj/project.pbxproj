@@ -7,18 +7,61 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8FCAF7551EA6837200562720 /* CryptoSwift.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 8FCAF74F1EA6830700562720 /* CryptoSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8FCAF7581EA6B74300562720 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FCAF7571EA6B74300562720 /* MainVC.swift */; };
 		8FDA6F351EA6798500FBB400 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA6F341EA6798500FBB400 /* AppDelegate.swift */; };
-		8FDA6F371EA6798500FBB400 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA6F361EA6798500FBB400 /* ViewController.swift */; };
+		8FDA6F371EA6798500FBB400 /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA6F361EA6798500FBB400 /* LoginVC.swift */; };
 		8FDA6F3A1EA6798500FBB400 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FDA6F381EA6798500FBB400 /* Main.storyboard */; };
 		8FDA6F3D1EA6798500FBB400 /* SimPwd.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8FDA6F3B1EA6798500FBB400 /* SimPwd.xcdatamodeld */; };
 		8FDA6F3F1EA6798500FBB400 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8FDA6F3E1EA6798500FBB400 /* Assets.xcassets */; };
 		8FDA6F421EA6798500FBB400 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8FDA6F401EA6798500FBB400 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		8FCAF74E1EA6830700562720 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FCAF7491EA6830700562720 /* CryptoSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 754BE45519693E190098E6F3;
+			remoteInfo = CryptoSwift;
+		};
+		8FCAF7501EA6830700562720 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FCAF7491EA6830700562720 /* CryptoSwift.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 754BE46019693E190098E6F3;
+			remoteInfo = Tests;
+		};
+		8FCAF7521EA6833800562720 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8FCAF7491EA6830700562720 /* CryptoSwift.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 754BE45419693E190098E6F3;
+			remoteInfo = CryptoSwift;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8FCAF7541EA6834C00562720 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8FCAF7551EA6837200562720 /* CryptoSwift.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		8FCAF7491EA6830700562720 /* CryptoSwift.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CryptoSwift.xcodeproj; path = ../CryptoSwift/CryptoSwift.xcodeproj; sourceTree = "<group>"; };
+		8FCAF7561EA6861D00562720 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		8FCAF7571EA6B74300562720 /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		8FDA6F311EA6798500FBB400 /* SimPwd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimPwd.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FDA6F341EA6798500FBB400 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8FDA6F361EA6798500FBB400 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		8FDA6F361EA6798500FBB400 /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		8FDA6F391EA6798500FBB400 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8FDA6F3C1EA6798500FBB400 /* SimPwd.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SimPwd.xcdatamodel; sourceTree = "<group>"; };
 		8FDA6F3E1EA6798500FBB400 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -38,9 +81,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8FCAF74A1EA6830700562720 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8FCAF74F1EA6830700562720 /* CryptoSwift.framework */,
+				8FCAF7511EA6830700562720 /* Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		8FDA6F281EA6798500FBB400 = {
 			isa = PBXGroup;
 			children = (
+				8FCAF7491EA6830700562720 /* CryptoSwift.xcodeproj */,
 				8FDA6F331EA6798500FBB400 /* SimPwd */,
 				8FDA6F321EA6798500FBB400 /* Products */,
 			);
@@ -57,9 +110,11 @@
 		8FDA6F331EA6798500FBB400 /* SimPwd */ = {
 			isa = PBXGroup;
 			children = (
+				8FCAF7561EA6861D00562720 /* MyPlayground.playground */,
 				8FDA6F491EA679B300FBB400 /* SimPwd.entitlements */,
 				8FDA6F341EA6798500FBB400 /* AppDelegate.swift */,
-				8FDA6F361EA6798500FBB400 /* ViewController.swift */,
+				8FDA6F361EA6798500FBB400 /* LoginVC.swift */,
+				8FCAF7571EA6B74300562720 /* MainVC.swift */,
 				8FDA6F381EA6798500FBB400 /* Main.storyboard */,
 				8FDA6F3E1EA6798500FBB400 /* Assets.xcassets */,
 				8FDA6F401EA6798500FBB400 /* LaunchScreen.storyboard */,
@@ -79,10 +134,12 @@
 				8FDA6F2D1EA6798500FBB400 /* Sources */,
 				8FDA6F2E1EA6798500FBB400 /* Frameworks */,
 				8FDA6F2F1EA6798500FBB400 /* Resources */,
+				8FCAF7541EA6834C00562720 /* Copy Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8FCAF7531EA6833800562720 /* PBXTargetDependency */,
 			);
 			name = SimPwd;
 			productName = SimPwd;
@@ -105,7 +162,7 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.DataProtection = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -122,12 +179,35 @@
 			mainGroup = 8FDA6F281EA6798500FBB400;
 			productRefGroup = 8FDA6F321EA6798500FBB400 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8FCAF74A1EA6830700562720 /* Products */;
+					ProjectRef = 8FCAF7491EA6830700562720 /* CryptoSwift.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8FDA6F301EA6798500FBB400 /* SimPwd */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		8FCAF74F1EA6830700562720 /* CryptoSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CryptoSwift.framework;
+			remoteRef = 8FCAF74E1EA6830700562720 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8FCAF7511EA6830700562720 /* Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = Tests.xctest;
+			remoteRef = 8FCAF7501EA6830700562720 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8FDA6F2F1EA6798500FBB400 /* Resources */ = {
@@ -148,12 +228,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				8FDA6F3D1EA6798500FBB400 /* SimPwd.xcdatamodeld in Sources */,
-				8FDA6F371EA6798500FBB400 /* ViewController.swift in Sources */,
+				8FCAF7581EA6B74300562720 /* MainVC.swift in Sources */,
+				8FDA6F371EA6798500FBB400 /* LoginVC.swift in Sources */,
 				8FDA6F351EA6798500FBB400 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8FCAF7531EA6833800562720 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CryptoSwift;
+			targetProxy = 8FCAF7521EA6833800562720 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		8FDA6F381EA6798500FBB400 /* Main.storyboard */ = {
@@ -272,7 +361,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = SimPwd/SimPwd.entitlements;
 				DEVELOPMENT_TEAM = R634NXSNZA;
 				INFOPLIST_FILE = SimPwd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -286,7 +374,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = SimPwd/SimPwd.entitlements;
 				DEVELOPMENT_TEAM = R634NXSNZA;
 				INFOPLIST_FILE = SimPwd/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -315,6 +402,7 @@
 				8FDA6F481EA6798500FBB400 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
