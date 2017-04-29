@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CryptoSwift
 
-class LoginVC: UIViewController {
+class LoginVC: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
@@ -16,8 +17,23 @@ class LoginVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
+        self.usernameField.delegate = self
+        self.passwordField.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
         
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        // Try to find next responder
+        if let nextField = textField.superview?.viewWithTag(textField.tag + 1) as? UITextField {
+            nextField.becomeFirstResponder()
+        } else {
+            self.signIn(self)
+        }
+        // Do not add a line break
+        return false
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,9 +82,15 @@ class LoginVC: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
         if segue.identifier == "showMainScreen" {
+            let masterKey =  passwordField.text!
             let dest = segue.destination as! MainVC
             dest.username = usernameField.text!
+            dest.masterKey = masterKey.sha256()
+            dest.iv = AppDelegate.getIV(username: usernameField.text!)
         }
     }
 }

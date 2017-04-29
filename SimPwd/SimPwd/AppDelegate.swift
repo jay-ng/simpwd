@@ -98,18 +98,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
+        let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let len = UInt32(letters.length)
         
+        var randomStringIV = ""
+        
+        for _ in 0 ..< 16 {
+            let rand = arc4random_uniform(len)
+            var nextChar = letters.character(at: Int(rand))
+            randomStringIV += NSString(characters: &nextChar, length: 1) as String
+        }
         let managedContext = AppDelegate.persistentContainer.viewContext
         let auth = NSEntityDescription.entity(forEntityName: "Auth", in: managedContext)!
         let account = NSManagedObject(entity: auth,
                                      insertInto: managedContext)
-        print ("- Account: \(username), \(password)")
+        print ("- Main Account: For \(username), with password: \(password), IV: \(randomStringIV)")
         account.setValue(username, forKey: "username")
         account.setValue(password.sha256(), forKey: "password")
+        account.setValue(randomStringIV, forKey: "iv")
         
         do {
             try managedContext.save()
-            print ("- Account: Account Created")
+            print ("- Main Account: Created")
         } catch let error {
             print ("- CoreData: Could not save context. Error: \(error)")
         }
@@ -147,22 +157,128 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         let managedContext = AppDelegate.persistentContainer.viewContext
-        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Auth")
-        let request = NSBatchDeleteRequest(fetchRequest: fetch)
+        let fetchAuth = NSFetchRequest<NSFetchRequestResult>(entityName: "Auth")
+        let fetchData = NSFetchRequest<NSFetchRequestResult>(entityName: "Data")
+        let requestAuth = NSBatchDeleteRequest(fetchRequest: fetchAuth)
+        let requestData = NSBatchDeleteRequest(fetchRequest: fetchData)
         
         do {
-            try managedContext.execute(request)
+            try managedContext.execute(requestAuth)
             try managedContext.save()
+            try managedContext.execute(requestData)
+            try managedContext.save()
+            print ("- Debug: Core Data Cleared")
         } catch {
             print ("There was an error")
         }
     }
+    
+    func getIV(username: String) -> String {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return ""
+        }
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetch = NSFetchRequest<NSManagedObject>(entityName: "Auth")
+        let loginPredicate = NSPredicate(format: "username == %@", username)
+        fetch.predicate = loginPredicate
+        fetch.returnsObjectsAsFaults = false
+        var iv = ""
+        do {
+            let accounts = try managedContext.fetch(fetch)
+            for acc in (accounts) {
+                if (username == acc.value(forKey: "username") as! String) {
+                    iv = acc.value(forKey: "iv") as! String
+                }
+            }
+        } catch {
+            print ("- CoreData: Can't fetch logins")
+        }
+        return iv
+    }
+    
+    func getLogin(username: String) -> [NSManagedObject] {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return [NSManagedObject]()
+        }
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetch = NSFetchRequest<NSManagedObject>(entityName: "Data")
+        let loginPredicate = NSPredicate(format: "username == %@", username)
+        fetch.predicate = loginPredicate
+        fetch.returnsObjectsAsFaults = false
+        do {
+            let logins = try managedContext.fetch(fetch)
+            return logins
+        } catch {
+            print ("- CoreData: Can't fetch logins")
+        }
+        return [NSManagedObject]()
+    }
+    
+    func saveLogin(username: String, site: String, login: String, password: String) -> Bool {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return false
+        }
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let data = NSEntityDescription.entity(forEntityName: "Data", in: managedContext)!
+        let aLogin = NSManagedObject(entity: data,
+                                      insertInto: managedContext)
+        print ("- For \(username), Site: \(site), Login: \(login), Password: \(password)")
+        aLogin.setValue(username, forKey: "username")
+        aLogin.setValue(site, forKey: "site")
+        aLogin.setValue(login, forKey: "loginId")
+        aLogin.setValue(password, forKey: "loginPw")
+        
+        do {
+            try managedContext.save()
+            print ("- Account: Account Created")
+            return true
+        } catch let error {
+            print ("- CoreData: Could not save context. Error: \(error)")
+        }
+        return false
+    }
 
-    // Crypto Function Implementation
+    func deleteLogin(username: String, site: String, login: String) -> Bool {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return false
+        }
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetch = NSFetchRequest<NSManagedObject>(entityName: "Data")
+        let usernamePredicate = NSPredicate(format: "username == %@", username)
+        let sitePredicate = NSPredicate(format: "site == %@", site)
+        let loginPredicate = NSPredicate(format: "loginId == %@", login)
+        let compound = NSCompoundPredicate(andPredicateWithSubpredicates: [usernamePredicate, sitePredicate, loginPredicate])
+        fetch.predicate = compound
+        fetch.returnsObjectsAsFaults = false
+        do {
+            let logins = try managedContext.fetch(fetch)
+            for login in (logins) {
+                managedContext.delete(login)
+            }
+            try managedContext.save()
+            print ("- CoreData: Delete Login Info Sucess")
+            return true
+        } catch {
+            print ("- CoreData: Can't fetch logins")
+        }
+        return false
+    }
     
 }
 
 class Account: NSManagedObject {
     @NSManaged var username: String
     @NSManaged var password: String
+}
+
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
 }
