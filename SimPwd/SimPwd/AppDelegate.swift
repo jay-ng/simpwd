@@ -94,6 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // CoreData Function Implementation
     
+    // Create a master account
     func createAccount(username: String, password: String) {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -103,6 +104,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         var randomStringIV = ""
         
+        // Generate a 16 bytes IV for AES, it is fixed per master account
+        // User does not need to know his IV key
         for _ in 0 ..< 16 {
             let rand = arc4random_uniform(len)
             var nextChar = letters.character(at: Int(rand))
@@ -113,10 +116,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let account = NSManagedObject(entity: auth,
                                      insertInto: managedContext)
         print ("- Main Account: For \(username), with password: \(password), IV: \(randomStringIV)")
+        
+        // Set key-value pair
         account.setValue(username, forKey: "username")
         account.setValue(password.sha256(), forKey: "password")
         account.setValue(randomStringIV, forKey: "iv")
         
+        // Save context
         do {
             try managedContext.save()
             print ("- Main Account: Created")
@@ -125,15 +131,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    // Signin Check
     func signIn(username: String, password: String) -> Bool {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return false
         }
-        
+        // Get context
         let managedContext = AppDelegate.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Auth")
         fetchRequest.returnsObjectsAsFaults = false
         
+        // Password is hashed using SHA256, then compare to hash stored in coredata
+        // Return true if matched, false if not
         do {
             let account = try managedContext.fetch(fetchRequest)
             for acc in (account) {
@@ -150,7 +159,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return false
     }
-    
+    // Debug function, clear all coredata tuples
     func clearData() {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -173,16 +182,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    // Get IV from core data
     func getIV(username: String) -> String {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return ""
         }
         let managedContext = AppDelegate.persistentContainer.viewContext
         let fetch = NSFetchRequest<NSManagedObject>(entityName: "Auth")
+        
+        // Set Predicate
         let loginPredicate = NSPredicate(format: "username == %@", username)
         fetch.predicate = loginPredicate
         fetch.returnsObjectsAsFaults = false
         var iv = ""
+        
+        // Fetch
         do {
             let accounts = try managedContext.fetch(fetch)
             for acc in (accounts) {
@@ -196,15 +210,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return iv
     }
     
+    // Get all login predicated by a username
     func getLogin(username: String) -> [NSManagedObject] {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return [NSManagedObject]()
         }
         let managedContext = AppDelegate.persistentContainer.viewContext
         let fetch = NSFetchRequest<NSManagedObject>(entityName: "Data")
+        
+        // Set predicate
         let loginPredicate = NSPredicate(format: "username == %@", username)
         fetch.predicate = loginPredicate
         fetch.returnsObjectsAsFaults = false
+        
+        // Fetch and return a set
         do {
             let logins = try managedContext.fetch(fetch)
             return logins
@@ -214,6 +233,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return [NSManagedObject]()
     }
     
+    // Save a login
     func saveLogin(username: String, site: String, login: String, password: String) -> Bool {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return false
@@ -223,11 +243,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let aLogin = NSManagedObject(entity: data,
                                       insertInto: managedContext)
         print ("- For \(username), Site: \(site), Login: \(login), Password: \(password)")
+        
+        // Set data and key for context
         aLogin.setValue(username, forKey: "username")
         aLogin.setValue(site, forKey: "site")
         aLogin.setValue(login, forKey: "loginId")
         aLogin.setValue(password, forKey: "loginPw")
         
+        // Save the context after setting key-value pairs
         do {
             try managedContext.save()
             print ("- Account: Account Created")
@@ -238,18 +261,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return false
     }
 
+    // Delete a saved login
     func deleteLogin(username: String, site: String, login: String) -> Bool {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return false
         }
         let managedContext = AppDelegate.persistentContainer.viewContext
         let fetch = NSFetchRequest<NSManagedObject>(entityName: "Data")
+        
+        // Set the predicate for CoreData Query
         let usernamePredicate = NSPredicate(format: "username == %@", username)
         let sitePredicate = NSPredicate(format: "site == %@", site)
         let loginPredicate = NSPredicate(format: "loginId == %@", login)
         let compound = NSCompoundPredicate(andPredicateWithSubpredicates: [usernamePredicate, sitePredicate, loginPredicate])
         fetch.predicate = compound
         fetch.returnsObjectsAsFaults = false
+        
+        // Fetch the query
         do {
             let logins = try managedContext.fetch(fetch)
             for login in (logins) {
@@ -264,11 +292,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return false
     }
     
+    func updateLogin(username: String, site: String, loginId: String, loginPw: String) -> Bool {
+        if deleteLogin(username: username, site: site, login: loginId) {
+            if saveLogin(username: username, site: site, login: loginId, password: loginPw) {
+                print ("- Login: Updated Login")
+                return true
+            }
+        }
+        return false
+    }
+    
+    func getAllAccount() {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetch = NSFetchRequest<NSManagedObject>(entityName: "Auth")
+        
+        // Fetch and return a set
+        do {
+            let auth = try managedContext.fetch(fetch)
+            for account in (auth) {
+                let username = account.value(forKey: "username")!
+                let password = account.value(forKey: "password")!
+                let iv = account.value(forKey: "iv")!
+                print ("- Master Account: \(username), \(password), \(iv)")
+            }
+        } catch {
+            print ("- CoreData: Can't fetch master accounts")
+        }
+    }
+    
+    func getAllLogin() {
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let managedContext = AppDelegate.persistentContainer.viewContext
+        let fetch = NSFetchRequest<NSManagedObject>(entityName: "Data")
+        
+        // Fetch and return a set
+        do {
+            let data = try managedContext.fetch(fetch)
+            for login in (data) {
+                let username = login.value(forKey: "username")!
+                let loginId = login.value(forKey: "loginId")!
+                let loginPw = login.value(forKey: "loginPw")!
+                let site = login.value(forKey: "site")!
+                print ("- Login: \(username), \(site), \(loginId), \(loginPw)")
+            }
+        } catch {
+            print ("- CoreData: Can't fetch master accounts")
+        }
+    }
+    
 }
 
 class Account: NSManagedObject {
     @NSManaged var username: String
     @NSManaged var password: String
+    @NSManaged var iv: String
 }
 
 extension UIViewController {
@@ -280,5 +362,14 @@ extension UIViewController {
     
     func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        present(alertController, animated: true, completion: nil)
     }
 }

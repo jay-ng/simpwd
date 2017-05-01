@@ -20,7 +20,17 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         self.hideKeyboardWhenTappedAround()
         self.usernameField.delegate = self
         self.passwordField.delegate = self
+        
         // Do any additional setup after loading the view, typically from a nib.
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        AppDelegate.getAllAccount()
         
     }
     
@@ -41,38 +51,42 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         // Dispose of any resources that can be recreated.
     }
 
+    // SignIn button activated
     @IBAction func signIn(_ sender: Any) {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        if usernameField.text == nil || usernameField.text == "" {
-            return
-        }
-        if passwordField.text == nil || passwordField.text == "" {
-            return
-        }
-        let success = AppDelegate.signIn(username: usernameField.text!, password: passwordField.text!)
-        if success {
-            print ("- Auth: Login Successed")
-            self.performSegue(withIdentifier: "showMainScreen", sender: self)
+        
+        // User input safety check
+        if usernameField.text! != "" && passwordField.text! != "" {
+            let success = AppDelegate.signIn(username: usernameField.text!, password: passwordField.text!)
+            if success {
+                print ("- Auth: Login Successed")
+                self.performSegue(withIdentifier: "showMainScreen", sender: self)
+            } else {
+                print ("- Auth: Login Failed")
+                self.showAlert(title: "Login", message: "Username and Password not recognized")
+            }
         } else {
-            print ("- Auth: Login Failed")
+            self.showAlert(title: "Error", message: "Please enter both username and password")
         }
     }
     
+    // CreateAccount activated
     @IBAction func createAccount(_ sender: Any) {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        if usernameField.text == nil || usernameField.text == "" {
-            return
+        
+        // Safety check
+        if usernameField.text! != "" && passwordField.text! != "" {
+            AppDelegate.createAccount(username: usernameField.text!, password: passwordField.text!)
+        } else {
+            self.showAlert(title: "Error", message: "Please enter both username and password")
         }
-        if passwordField.text == nil || passwordField.text == "" {
-            return
-        }
-        AppDelegate.createAccount(username: usernameField.text!, password: passwordField.text!)
     }
 
+    // Debug, clear coredata
     @IBAction func clearCoreData(_ sender: Any) {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -81,6 +95,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         AppDelegate.clearData()
     }
     
+    // Prepare for transition, passing sensitive information to next view
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let AppDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -88,6 +103,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         if segue.identifier == "showMainScreen" {
             let masterKey =  passwordField.text!
             let dest = segue.destination as! MainVC
+            // Pass username, masterkey, and IV fetched from coredata
             dest.username = usernameField.text!
             dest.masterKey = masterKey.sha256()
             dest.iv = AppDelegate.getIV(username: usernameField.text!)

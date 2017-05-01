@@ -8,6 +8,8 @@
 
 import Foundation
 
+// NSManagedObject, is a a class
+// Use to store sets of saved login
 class Login {
     var site : String
     var username : String

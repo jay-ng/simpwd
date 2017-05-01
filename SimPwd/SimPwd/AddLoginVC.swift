@@ -45,14 +45,21 @@ class AddLoginVC: UIViewController {
         let key = Array(self.masterKey.utf8).sha256()
         let iv = Array(self.iv.utf8)
         let aes = try! AES(key: key, iv: iv, blockMode: .CBC, padding: PKCS7())
-        let plainPassword = passwordField.text!
+        var plainPassword = ""
+        if passwordField.text! != "" {
+            plainPassword = passwordField.text!
+        }
         let cipher = try! aes.encrypt(Array(plainPassword.utf8))
         let base64encrypted = cipher.toBase64()
-        if (AppDelegate.saveLogin(username: self.username, site: self.siteField.text!, login: self.usernameField.text!, password: base64encrypted!)) {
-            print ("- Add Login: Success")
-            self.navigationController?.popViewController(animated: true)
+        if siteField.text! != "" && usernameField.text! != "" && passwordField.text! != "" {
+            if (AppDelegate.saveLogin(username: self.username, site: self.siteField.text!, login: self.usernameField.text!, password: base64encrypted!)) {
+                print ("- Add Login: Success")
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                print ("- Add Login: Failed")
+            }
         } else {
-            print ("- Add Login: Failed")
+            self.showAlert(title: "Error", message: "Please enter all information")
         }
     }
     
@@ -82,6 +89,7 @@ class AddLoginVC: UIViewController {
     }
     
     @IBAction func clear(_ sender: Any) {
+        self.siteField.text = ""
         self.usernameField.text = ""
         self.passwordField.text = ""
         self.pwLength = 8
